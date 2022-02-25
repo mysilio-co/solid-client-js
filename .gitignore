@@ -12,3 +12,4 @@ docs/dist/
 .env*.local
 .codesandbox/sandbox/.parcel-cache/
 test-results/
+.parcel-cache/
