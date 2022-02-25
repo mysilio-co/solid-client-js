@@ -37,10 +37,7 @@ import {
   acp_v4 as acp,
   getSolidDataset,
 } from "../../src/index";
-import {
-  getTestingEnvironment,
-  TestingEnvironment,
-} from "../util/getTestingEnvironment";
+import { getNodeTestingEnvironment } from "../util/getTestingEnvironment";
 import { getAccessControlUrlAll } from "../../src/acp/accessControl/getAccessControlUrlAll";
 import { getAgentAccess } from "../../src/universal/getAgentAccess";
 import { setAgentAccess } from "../../src/universal/setAgentAccess";
@@ -51,7 +48,7 @@ import {
   getPublicAccess as legacy_getPublicAccess,
 } from "../../src/access/universal";
 
-const env: TestingEnvironment = getTestingEnvironment();
+const env = getNodeTestingEnvironment();
 const sessionResourcePrefix: string = "solid-client-tests/node/acp-";
 if (env.feature.acp !== true) {
   // eslint-disable-next-line jest/no-focused-tests

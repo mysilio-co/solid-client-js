@@ -54,11 +54,11 @@ import {
 } from "../../src/access/universal";
 
 import { blankNode } from "@rdfjs/dataset";
-import { getTestingEnvironment, TestingEnvironment } from "../util/getTestingEnvironment";
+import { getNodeTestingEnvironment } from "../util/getTestingEnvironment";
 import { getAuthenticatedSession } from "../util/getAuthenticatedSession";
 import type { Session } from "@inrupt/solid-client-authn-node";
 
-const env: TestingEnvironment = getTestingEnvironment();
+const env = getNodeTestingEnvironment();
 const sessionResourcePrefix: string = "solid-client-tests/node/e2e-";
 if (env.environment === "NSS") {
   // eslint-disable-next-line jest/no-focused-tests
