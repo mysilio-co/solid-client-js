@@ -65,14 +65,14 @@ describe("Authenticated end-to-end WAC", () => {
   let options: { fetch: typeof global.fetch };
   let session: Session;
   let sessionResource: string;
-  
+
   beforeEach(async () => {
     session = await getAuthenticatedSession(env);
     sessionResource = `${env.pod}${sessionResourcePrefix}${session.info.sessionId}`;
     options = { fetch: session.fetch };
     await saveSolidDatasetAt(sessionResource, createSolidDataset(), options);
   });
-  
+
   afterEach(async () => {
     await deleteSolidDataset(sessionResource, options);
     await session.logout();
@@ -91,10 +91,14 @@ describe("Authenticated end-to-end WAC", () => {
   });
 
   it("can read and update ACLs", async () => {
-    const fakeWebId = "https://example.com/fake-webid#" + session.info.sessionId;
+    const fakeWebId =
+      "https://example.com/fake-webid#" + session.info.sessionId;
 
     const datasetWithAcl = await getSolidDatasetWithAcl(env.pod, options);
-    const datasetWithoutAcl = await getSolidDatasetWithAcl(sessionResource, options);
+    const datasetWithoutAcl = await getSolidDatasetWithAcl(
+      sessionResource,
+      options
+    );
 
     expect(hasResourceAcl(datasetWithAcl)).toBe(true);
     expect(hasResourceAcl(datasetWithoutAcl)).toBe(false);

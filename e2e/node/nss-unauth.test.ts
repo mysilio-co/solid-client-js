@@ -19,12 +19,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  describe,
-  expect,
-  it,
-  test,
-} from "@jest/globals";
+import { describe, expect, it, test } from "@jest/globals";
 
 import { foaf, schema } from "rdf-namespaces";
 import {

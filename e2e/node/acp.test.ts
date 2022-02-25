@@ -59,14 +59,14 @@ describe("An ACP Solid server", () => {
   let options: { fetch: typeof global.fetch };
   let session: Session;
   let sessionResource: string;
-  
+
   beforeEach(async () => {
     session = await getAuthenticatedSession(env);
     sessionResource = `${env.pod}${sessionResourcePrefix}${session.info.sessionId}`;
     options = { fetch: session.fetch };
     await saveSolidDatasetAt(sessionResource, createSolidDataset(), options);
   });
-  
+
   afterEach(async () => {
     await deleteSolidDataset(sessionResource, options);
     await session.logout();
@@ -114,13 +114,15 @@ describe("An ACP Solid server", () => {
       controlRead: false,
       controlWrite: false,
     });
-    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual({
-      read: true,
-      append: false,
-      write: false,
-      controlRead: false,
-      controlWrite: false,
-    });
+    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual(
+      {
+        read: true,
+        append: false,
+        write: false,
+        controlRead: false,
+        controlWrite: false,
+      }
+    );
   });
 
   it("can get and set read access for the public", async () => {
@@ -133,9 +135,9 @@ describe("An ACP Solid server", () => {
         ? latest_getPublicAccess
         : legacy_getPublicAccess;
 
-    await expect(
-      getSolidDataset(sessionResource, options)
-    ).resolves.toEqual(expect.objectContaining({ graphs: { default: {} } }));
+    await expect(getSolidDataset(sessionResource, options)).resolves.toEqual(
+      expect.objectContaining({ graphs: { default: {} } })
+    );
 
     await expect(getSolidDataset(sessionResource)).rejects.toThrow();
 
@@ -193,13 +195,15 @@ describe("An ACP Solid server", () => {
       controlRead: true,
       controlWrite: true,
     });
-    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual({
-      read: true,
-      append: true,
-      write: true,
-      controlRead: true,
-      controlWrite: true,
-    });
+    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual(
+      {
+        read: true,
+        append: true,
+        write: true,
+        controlRead: true,
+        controlWrite: true,
+      }
+    );
   });
 
   it("can remove access for an agent", async () => {
@@ -235,12 +239,14 @@ describe("An ACP Solid server", () => {
       controlRead: false,
       controlWrite: false,
     });
-    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual({
-      read: true,
-      append: true,
-      write: false,
-      controlRead: false,
-      controlWrite: false,
-    });
+    expect(await getAgentAccess(sessionResource, agent, options)).toStrictEqual(
+      {
+        read: true,
+        append: true,
+        write: false,
+        controlRead: false,
+        controlWrite: false,
+      }
+    );
   });
 });
