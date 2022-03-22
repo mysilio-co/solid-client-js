@@ -8,6 +8,31 @@ The following changes have been implemented but not released yet:
 
 ### New features
 
+- `getAgentAccessAll` has been added to the new `universal` access module. This
+  function provides an overview of access modes granted to all agents.
+
+### Bugfixes
+
+- `getProfileAll` and `getPodUrlAll` no longer make an authenticated request to the
+  WebID profile, which should be a public resource in the first place.
+
+## [1.20.2] - 2022-03-18
+
+### Bugfixes
+
+- Export the `Actor` type in the `universal_v1` module.
+
+## [1.20.1] - 2022-03-08
+
+### Bugfixes
+
+- `getPodUrlAll` no longer throws if the WebID only appears as the object in an
+  alternative profile (and not as a subject), which is a valid case.
+
+## [1.20.0] - 2022-02-23
+
+### New features
+
 - `getAltProfileUrlAllFrom`: A function available in the `profile/webid` module
   which returns the alternative profiles URLs (if any) from a given WebID profile
   resource.

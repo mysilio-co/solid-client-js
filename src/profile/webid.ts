@@ -35,6 +35,8 @@ import {
   getSourceIri,
   internal_defaultFetchOptions,
 } from "../resource/resource";
+import { fetch as unauthenticatedFetch } from "cross-fetch";
+import { fetch as defaultFetch } from "../fetcher";
 
 export type ProfileAll<T extends SolidDataset & WithServerResourceInfo> = {
   webIdProfile: T;
@@ -42,7 +44,7 @@ export type ProfileAll<T extends SolidDataset & WithServerResourceInfo> = {
 };
 
 /**
- * List all the alternative profiles IRI found in a given WebID profile. 
+ * List all the alternative profiles IRI found in a given WebID profile.
  *
  * Note that some of these profiles may be private, and you may not have access to
  * the resulting resource.
@@ -50,6 +52,7 @@ export type ProfileAll<T extends SolidDataset & WithServerResourceInfo> = {
  * @param webId The WebID of the user's whose alternative profiles you are discovering.
  * @param webIdProfile The WebID profile obtained dereferencing the provided WebID.
  * @returns A list of URLs of the user's alternative profiles.
+ * @since 1.20.0
  */
 export function getAltProfileUrlAllFrom(
   webId: WebId,
@@ -90,25 +93,29 @@ export async function getProfileAll<
   T extends SolidDataset & WithServerResourceInfo
 >(
   webId: WebId,
-  options: Partial<
+  options?: Partial<
     typeof internal_defaultFetchOptions & {
       webIdProfile: T;
     }
-  > = internal_defaultFetchOptions
+  >
 ): Promise<ProfileAll<T>> {
-  const {
-    fetch,
-    webIdProfile = (await getSolidDataset(webId, { fetch })) as T,
-  } = options;
-
-  const altProfileAll = (await Promise.allSettled(
-    getAltProfileUrlAllFrom(webId, webIdProfile).map((uniqueProfileIri) =>
-      getSolidDataset(uniqueProfileIri, { fetch })
+  const authFetch = options?.fetch ?? defaultFetch;
+  const webIdProfile =
+    options?.webIdProfile ??
+    ((await getSolidDataset(webId, { fetch: unauthenticatedFetch })) as T);
+  const altProfileAll = (
+    await Promise.allSettled(
+      getAltProfileUrlAllFrom(webId, webIdProfile).map((uniqueProfileIri) =>
+        getSolidDataset(uniqueProfileIri, { fetch: authFetch })
+      )
     )
-  ))
-  // Ignore the alternative profiles lookup which failed.
-  .filter((result): result is PromiseFulfilledResult<T> => result.status === "fulfilled")
-  .map((successfulResult) => successfulResult.value);
+  )
+    // Ignore the alternative profiles lookup which failed.
+    .filter(
+      (result): result is PromiseFulfilledResult<T> =>
+        result.status === "fulfilled"
+    )
+    .map((successfulResult) => successfulResult.value);
 
   return {
     webIdProfile,
@@ -161,16 +168,11 @@ export function getPodUrlAllFrom(
   [profiles.webIdProfile, ...profiles.altProfileAll].forEach(
     (profileResource) => {
       const webIdThing = getThing(profileResource, webId);
-      if (webIdThing === null) {
-        throw new Error(
-          `The WebId [${webId}] does not appear in the resource fetched at [${getSourceIri(
-            profileResource
-          )}]`
+      if (webIdThing !== null) {
+        getIriAll(webIdThing, pim.storage).forEach((podIri) =>
+          result.add(podIri)
         );
       }
-      getIriAll(webIdThing, pim.storage).forEach((podIri) =>
-        result.add(podIri)
-      );
     }
   );
   return Array.from(result);

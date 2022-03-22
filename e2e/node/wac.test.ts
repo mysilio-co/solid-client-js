@@ -50,7 +50,6 @@ import {
   getAgentAccess as getAgentAccessUniversal,
   setPublicAccess as setPublicAccessUniversal,
 } from "../../src/access/universal";
-
 import { getNodeTestingEnvironment } from "../util/getTestingEnvironment";
 import { getAuthenticatedSession } from "../util/getAuthenticatedSession";
 
