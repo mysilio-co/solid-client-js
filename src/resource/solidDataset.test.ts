@@ -230,6 +230,50 @@ describe("responseToSolidDataset", () => {
     });
   });
 
+  it("does not return an error when a thing's URL's last path segment starts with a dash", async () => {
+    const turtle = `
+      @prefix p: <https://newpublic.substack.com/p/>.
+      @prefix my: <https://mysilio.garden/vocab/>.
+
+      p:-robin-sloan-describing-the-emotions a my:Bookmark.
+    `;
+
+    const response = new Response(turtle, {
+      headers: {
+        "Content-Type": "text/turtle",
+      },
+    });
+    jest
+      .spyOn(response, "url", "get")
+      .mockReturnValue("https://travis.mysilio.me/public/test.ttl");
+    const solidDataset = await responseToSolidDataset(response);
+
+    expect(solidDataset).toStrictEqual({
+      graphs: {
+        default: {
+          "https://newpublic.substack.com/p/-robin-sloan-describing-the-emotions": {
+            predicates: {
+              "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                namedNodes: [
+                  "https://mysilio.garden/vocab/Bookmark",
+                ]
+              }
+            },
+            type: "Subject",
+            url: "https://newpublic.substack.com/p/-robin-sloan-describing-the-emotions",
+          },
+        },
+      },
+      internal_resourceInfo: {
+        contentType: "text/turtle",
+        isRawData: false,
+        linkedResources: {},
+        sourceIri: "https://test.mysilio.me/public/test.ttl",
+      },
+      type: "Dataset",
+    });
+  });
+
   it("does not include non-deterministic identifiers when it detects non-cyclic chains of Blank Nodes", async () => {
     const turtle = `
       @prefix : <#>.
